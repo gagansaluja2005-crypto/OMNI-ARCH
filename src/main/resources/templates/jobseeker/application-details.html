@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="'Application #' + ${app.id} + ' - TalentVela'">Application Details - TalentVela</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <style>
+        /* Visual Stepper / Status Timeline */
+        .timeline {
+            display: flex;
+            justify-content: space-between;
+            position: relative;
+            margin: 2rem 0 2.5rem 0;
+        }
+        .timeline::before {
+            content: '';
+            position: absolute;
+            top: 20px;
+            left: 5%;
+            right: 5%;
+            height: 4px;
+            background: #e2e8f0;
+            z-index: 1;
+        }
+        .timeline-step {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            width: 25%;
+        }
+        .timeline-circle {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            background: white;
+            border: 3px solid #cbd5e1;
+            color: #64748b;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.95rem;
+            margin: 0 auto 0.5rem auto;
+            transition: var(--transition);
+        }
+        .timeline-step.active .timeline-circle {
+            border-color: var(--primary);
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.2);
+        }
+        .timeline-step.completed .timeline-circle {
+            border-color: var(--success);
+            background: var(--success);
+            color: white;
+        }
+        .timeline-step.rejected .timeline-circle {
+            border-color: var(--danger);
+            background: var(--danger);
+            color: white;
+        }
+        .timeline-label {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #475569;
+        }
+    </style>
+</head>
+<body>
+
+    <div th:replace="~{fragments/navbar :: navbar('applications')}"></div>
+
+    <main class="main-content" style="max-width: 900px;">
+        <div style="margin-bottom: 1.5rem;">
+            <a th:href="@{/seeker/applications}" style="font-size: 0.9rem; font-weight: 600;">&larr; Back to My Applications</a>
+        </div>
+
+        <!-- Application Summary Card -->
+        <div class="card" style="margin-bottom: 1.5rem;">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1.25rem;">
+                <div>
+                    <span class="job-company" th:text="${app.companyName}">TechCorp</span>
+                    <h1 class="page-title" style="font-size: 1.5rem; margin-top: 0.25rem;" th:text="${app.jobTitle}">Backend Java Developer</h1>
+                    <p style="font-size: 0.85rem; color: #64748b; margin-top: 0.25rem;">
+                        Application ID: <strong>#APP-<span th:text="${app.id}">101</span></strong> &bull; 
+                        Applied on: <strong th:text="${app.appliedAt}">2026-10-04</strong>
+                    </p>
+                </div>
+                <div>
+                    <span class="badge" th:classappend="${app.statusBadgeClass}" style="font-size: 0.9rem; padding: 0.45rem 1rem;" th:text="${app.status}">UNDER_REVIEW</span>
+                </div>
+            </div>
+
+            <!-- Visual 4-Stage Application Progress Timeline -->
+            <div class="timeline">
+                <!-- 1. Applied -->
+                <div class="timeline-step completed">
+                    <div class="timeline-circle">✓</div>
+                    <div class="timeline-label">1. Applied</div>
+                </div>
+
+                <!-- 2. Under Review -->
+                <div class="timeline-step" th:classappend="${app.status == 'UNDER_REVIEW' ? 'active' : (app.status == 'SHORTLISTED' || app.status == 'SELECTED' ? 'completed' : '')}">
+                    <div class="timeline-circle" th:text="${app.status == 'SHORTLISTED' || app.status == 'SELECTED' ? '✓' : '2'}">2</div>
+                    <div class="timeline-label">2. Under Review</div>
+                </div>
+
+                <!-- 3. Shortlisted -->
+                <div class="timeline-step" th:classappend="${app.status == 'SHORTLISTED' ? 'active' : (app.status == 'SELECTED' ? 'completed' : (app.status == 'REJECTED' ? 'rejected' : ''))}">
+                    <div class="timeline-circle" th:text="${app.status == 'SELECTED' ? '✓' : (app.status == 'REJECTED' ? '✕' : '3')}">3</div>
+                    <div class="timeline-label" th:text="${app.status == 'REJECTED' ? 'Rejected' : '3. Shortlisted'}">3. Shortlisted</div>
+                </div>
+
+                <!-- 4. Selected / Decision -->
+                <div class="timeline-step" th:classappend="${app.status == 'SELECTED' ? 'completed' : ''}">
+                    <div class="timeline-circle" th:text="${app.status == 'SELECTED' ? '★' : '4'}">4</div>
+                    <div class="timeline-label">4. Offer / Selected</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid-cols-2">
+            <!-- Left: Candidate Submission Details -->
+            <div>
+                <div class="card" style="margin-bottom: 1.5rem;">
+                    <h3 class="card-title">📝 Submitted Pitch & Cover Note</h3>
+                    <div style="background-color: #f8fafc; border: 1px solid var(--border-color); border-radius: var(--radius-sm); padding: 1rem; color: #334155; font-size: 0.9rem; line-height: 1.6; white-space: pre-line;" th:text="${app.coverLetterText}">
+                        I have strong foundations in Java OOP and Spring Boot layered architecture.
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3 class="card-title">📄 Attached Resume Document</h3>
+                    <div style="display: flex; align-items: center; justify-content: space-between; background-color: #eff6ff; border: 1px solid #bfdbfe; border-radius: var(--radius-sm); padding: 1rem;">
+                        <div style="display: flex; align-items: center; gap: 0.75rem;">
+                            <span style="font-size: 1.75rem;">📑</span>
+                            <div>
+                                <strong style="color: #1e3a8a; font-size: 0.9rem;" th:text="${app.resumeFileName}">Kushagra_Pandey_Resume_v1.pdf</strong>
+                                <div style="font-size: 0.75rem; color: #3b82f6;">Attached to Application Record</div>
+                            </div>
+                        </div>
+                        <a th:href="@{/seeker/resume}" class="btn btn-outline" style="padding: 0.35rem 0.75rem; font-size: 0.8rem;">View Resume</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right: Job Summary & Actions -->
+            <div>
+                <div class="card" style="margin-bottom: 1.5rem;">
+                    <h3 class="card-title">💼 Role Information</h3>
+                    <div style="font-size: 0.85rem; line-height: 1.8; color: #334155;">
+                        <div><strong>Hiring Company:</strong> <span th:text="${app.companyName}">TechCorp</span></div>
+                        <div><strong>Location:</strong> <span th:text="${app.location}">Bengaluru, Karnataka</span></div>
+                        <div><strong>Status:</strong> <span class="badge" th:classappend="${app.statusBadgeClass}" th:text="${app.status}">APPLIED</span></div>
+                    </div>
+                    <div style="margin-top: 1.25rem; padding-top: 1rem; border-top: 1px solid var(--border-color);">
+                        <a th:href="@{'/seeker/jobs/' + ${app.jobId}}" class="btn btn-primary" style="width: 100%; text-align: center; margin-bottom: 0.5rem;">
+                            View Original Job Posting
+                        </a>
+                        <form th:action="@{'/seeker/applications/' + ${app.id} + '/withdraw'}" method="post" onsubmit="return confirm('Are you sure you want to withdraw this application?');">
+                            <button type="submit" class="btn btn-danger-outline" style="width: 100%;">
+                                Withdraw Application
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="card" style="background-color: #f8fafc;">
+                    <h4 style="font-size: 0.85rem; color: #475569; margin-bottom: 0.35rem;">ℹ️ Review Process:</h4>
+                    <p style="font-size: 0.8rem; color: #64748b; line-height: 1.5;">
+                        Once the recruiter reviews your application in the Employer Portal, the status badge will update from <em>Under Review</em> to <em>Shortlisted</em> or <em>Selected</em>.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div th:replace="~{fragments/footer :: footer}"></div>
+</body>
+</html>

@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="'Apply for ' + ${job.title} + ' - TalentVela'">Submit Application - TalentVela</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+    <div th:replace="~{fragments/navbar :: navbar('jobs')}"></div>
+
+    <main class="main-content" style="max-width: 800px;">
+        <div style="margin-bottom: 1.5rem;">
+            <a th:href="@{'/seeker/jobs/' + ${job.id}}" style="font-size: 0.9rem; font-weight: 600;">&larr; Back to Job Details</a>
+        </div>
+
+        <div class="card">
+            <div style="padding-bottom: 1.25rem; border-bottom: 1px solid var(--border-color); margin-bottom: 1.5rem;">
+                <span class="job-company" th:text="${job.companyName}">TechCorp</span>
+                <h1 class="page-title" style="font-size: 1.5rem; margin-top: 0.2rem;">Apply for <span th:text="${job.title}">Backend Java Developer</span></h1>
+                <p style="font-size: 0.85rem; color: #64748b; margin-top: 0.25rem;">
+                    📍 <span th:text="${job.locationCity + ', ' + job.locationState}">Bengaluru</span> &bull; 
+                    💼 <span th:text="${job.jobType}">Full-Time</span> &bull; 
+                    💰 <span th:text="${job.formattedSalary}">₹10,00,000 - ₹15,00,000</span>
+                </p>
+            </div>
+
+            <form th:action="@{'/seeker/jobs/' + ${job.id} + '/apply'}" method="post">
+                <!-- 1. Candidate Details Confirmation -->
+                <div style="margin-bottom: 1.75rem;">
+                    <h3 style="font-size: 1rem; color: #1e293b; margin-bottom: 0.75rem;">1. Candidate Information</h3>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; background-color: #f8fafc; padding: 1rem; border-radius: var(--radius-sm); border: 1px solid var(--border-color);">
+                        <div>
+                            <span style="font-size: 0.75rem; color: #64748b; display: block;">Full Name</span>
+                            <strong style="font-size: 0.9rem; color: #0f172a;" th:text="${profile.fullName}">Kushagra Pandey</strong>
+                        </div>
+                        <div>
+                            <span style="font-size: 0.75rem; color: #64748b; display: block;">Email</span>
+                            <strong style="font-size: 0.9rem; color: #0f172a;" th:text="${profile.email}">kushagra.pandey@talentvela.com</strong>
+                        </div>
+                        <div>
+                            <span style="font-size: 0.75rem; color: #64748b; display: block;">Phone</span>
+                            <strong style="font-size: 0.9rem; color: #0f172a;" th:text="${profile.phone}">+91 98765 43210</strong>
+                        </div>
+                        <div>
+                            <span style="font-size: 0.75rem; color: #64748b; display: block;">Highest Qualification</span>
+                            <strong style="font-size: 0.9rem; color: #0f172a;" th:text="${profile.highestQualification}">B.Tech in CSE</strong>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2. Attached Resume Verification -->
+                <div style="margin-bottom: 1.75rem;">
+                    <h3 style="font-size: 1rem; color: #1e293b; margin-bottom: 0.75rem;">2. Attached Resume</h3>
+                    <div style="display: flex; justify-content: space-between; align-items: center; background-color: #eff6ff; border: 1px solid #bfdbfe; border-radius: var(--radius-sm); padding: 1rem;">
+                        <div style="display: flex; align-items: center; gap: 0.75rem;">
+                            <span style="font-size: 1.75rem;">📄</span>
+                            <div>
+                                <div style="font-weight: 600; font-size: 0.95rem; color: #1e3a8a;" th:text="${resume.fileName}">Kushagra_Pandey_Resume_v1.pdf</div>
+                                <div style="font-size: 0.75rem; color: #3b82f6;">Extracted skills: <span th:text="${resume.extractedSkills}">Java, Spring Boot, MySQL...</span></div>
+                            </div>
+                        </div>
+                        <a th:href="@{/seeker/resume}" style="font-size: 0.8rem; font-weight: 600;">Change Resume &rarr;</a>
+                    </div>
+                </div>
+
+                <!-- 3. Cover Letter / Candidate Pitch -->
+                <div class="form-group" style="margin-bottom: 1.75rem;">
+                    <label class="form-label" for="coverLetter">
+                        3. Cover Letter / Pitch to Hiring Team (Optional)
+                    </label>
+                    <textarea id="coverLetter" name="coverLetter" rows="4" class="form-control" 
+                              placeholder="Briefly describe why you are interested in this position and how your Java / Spring Boot skills match the requirements..."></textarea>
+                    <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.35rem;">
+                        Keep it focused on your core technical projects and passion for software engineering.
+                    </p>
+                </div>
+
+                <!-- Submit & Cancel Actions -->
+                <div style="display: flex; gap: 1rem; align-items: center; padding-top: 1rem; border-top: 1px solid var(--border-color);">
+                    <button type="submit" class="btn btn-primary" style="padding: 0.7rem 1.75rem;">
+                        Submit Application
+                    </button>
+                    <a th:href="@{'/seeker/jobs/' + ${job.id}}" class="btn btn-outline">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </main>
+
+    <div th:replace="~{fragments/footer :: footer}"></div>
+</body>
+</html>

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+    <nav th:fragment="navbar(activeTab)" class="navbar">
+        <div class="navbar-container">
+            <a th:href="@{/seeker/dashboard}" class="brand">
+                <span class="brand-badge">TV</span>
+                <span>TalentVela</span>
+            </a>
+
+            <ul class="nav-links">
+                <li>
+                    <a th:href="@{/seeker/dashboard}" 
+                       th:classappend="${activeTab == 'dashboard'} ? 'active' : ''" 
+                       class="nav-link">Dashboard</a>
+                </li>
+                <li>
+                    <a th:href="@{/seeker/jobs}" 
+                       th:classappend="${activeTab == 'jobs'} ? 'active' : ''" 
+                       class="nav-link">Find Jobs</a>
+                </li>
+                <li>
+                    <a th:href="@{/seeker/applications}" 
+                       th:classappend="${activeTab == 'applications'} ? 'active' : ''" 
+                       class="nav-link">My Applications</a>
+                </li>
+                <li>
+                    <a th:href="@{/seeker/resume}" 
+                       th:classappend="${activeTab == 'resume'} ? 'active' : ''" 
+                       class="nav-link">Resume & Skills</a>
+                </li>
+                <li>
+                    <a th:href="@{/seeker/profile}" 
+                       th:classappend="${activeTab == 'profile'} ? 'active' : ''" 
+                       class="nav-link">My Profile</a>
+                </li>
+            </ul>
+
+            <div class="nav-user">
+                <div class="user-avatar">KP</div>
+                <div class="user-info">
+                    <div class="user-name">Kushagra Pandey</div>
+                    <div class="user-role">Job Seeker</div>
+                </div>
+            </div>
+        </div>
+    </nav>
+</body>
+</html>

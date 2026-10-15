@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${job.title + ' at ' + job.companyName + ' - TalentVela'}">Job Details - TalentVela</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+    <div th:replace="~{fragments/navbar :: navbar('jobs')}"></div>
+
+    <main class="main-content">
+        <!-- Breadcrumb / Back Navigation -->
+        <div style="margin-bottom: 1.5rem;">
+            <a th:href="@{/seeker/jobs}" style="font-size: 0.9rem; font-weight: 600;">&larr; Back to all jobs</a>
+        </div>
+
+        <div th:if="${errorMessage}" class="alert alert-danger">
+            <span>⚠️</span>
+            <span th:text="${errorMessage}">Error notification</span>
+        </div>
+
+        <div class="grid-cols-2">
+            <!-- Left: Primary Job Specifications -->
+            <div>
+                <div class="card" style="margin-bottom: 1.5rem;">
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem;">
+                        <div>
+                            <span class="job-company" style="font-size: 1rem;" th:text="${job.companyName}">TechCorp</span>
+                            <h1 class="job-title" style="font-size: 1.6rem; margin-top: 0.25rem;" th:text="${job.title}">Backend Java Developer</h1>
+                        </div>
+                        <div class="job-match-badge" style="font-size: 0.95rem; padding: 0.4rem 0.8rem;" th:text="${job.matchScore + '% Match'}">94% Match</div>
+                    </div>
+
+                    <div class="job-meta" style="margin: 1rem 0; padding: 1rem 0; border-top: 1px solid var(--border-color); border-bottom: 1px solid var(--border-color);">
+                        <span class="job-meta-item">📍 <strong th:text="${job.locationCity + ', ' + job.locationState}">Bengaluru, Karnataka</strong></span>
+                        <span class="job-meta-item">💼 <strong th:text="${job.jobType}">Full-Time</strong> (<span th:text="${job.workMode}">Hybrid</span>)</span>
+                        <span class="job-meta-item">💰 <strong th:text="${job.formattedSalary}">₹10,00,000 - ₹15,00,000</strong></span>
+                        <span class="job-meta-item">⏳ Experience: <strong th:text="${job.experienceRequired}">1-3 Years</strong></span>
+                    </div>
+
+                    <h3 style="font-size: 1.1rem; color: #1e293b; margin: 1.5rem 0 0.75rem 0;">Role Overview & Responsibilities</h3>
+                    <div style="color: #334155; line-height: 1.7; font-size: 0.95rem; white-space: pre-line;" th:text="${job.description}">
+                        Detailed job description goes here...
+                    </div>
+
+                    <h3 style="font-size: 1.1rem; color: #1e293b; margin: 1.75rem 0 0.75rem 0;">Required Technical Skills</h3>
+                    <div>
+                        <span th:each="skill : ${job.skillsArray}" class="skill-tag" style="font-size: 0.85rem; padding: 0.35rem 0.75rem;" th:text="${skill}">Java</span>
+                    </div>
+                </div>
+
+                <!-- Skill Match & Gap Analysis Card (Differentiator Feature) -->
+                <div class="card" style="border-left: 4px solid var(--success);">
+                    <h3 class="card-title">
+                        <span>🔍 Smart Skill Gap Analysis</span>
+                        <span style="font-size: 0.85rem; color: var(--success); font-weight: 600;">Based on Kushagra's Profile</span>
+                    </h3>
+                    <p style="font-size: 0.85rem; color: #64748b; margin-bottom: 1rem;">
+                        Our recruitment intelligence compares your profile and active resume against this job's requirements:
+                    </p>
+
+                    <div style="margin-bottom: 0.75rem;">
+                        <div style="font-size: 0.8rem; font-weight: 700; color: #065f46; margin-bottom: 0.35rem;">✓ SKILLS YOU HAVE MATCHED:</div>
+                        <span th:each="skill : ${job.matchedSkills}" class="skill-tag matched" th:text="${skill}">Java</span>
+                    </div>
+
+                    <div th:if="${not #lists.isEmpty(job.missingSkills)}">
+                        <div style="font-size: 0.8rem; font-weight: 700; color: #991b1b; margin-bottom: 0.35rem;">⚠️ SUGGESTED SKILLS TO ADD/LEARN:</div>
+                        <span th:each="skill : ${job.missingSkills}" class="skill-tag missing" th:text="${skill}">Kafka</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right: Action Sidebar & Position Summary -->
+            <div>
+                <div class="card" style="margin-bottom: 1.5rem;">
+                    <h3 class="card-title">Apply for this Role</h3>
+
+                    <!-- State 1: Deadline Passed -->
+                    <div th:if="${job.deadlinePassed}" style="background-color: var(--danger-bg); border: 1px solid #fca5a5; border-radius: var(--radius-sm); padding: 1rem; margin-bottom: 1.25rem;">
+                        <p style="color: #991b1b; font-size: 0.9rem; font-weight: 600;">🚫 Application Deadline Passed</p>
+                        <p style="color: #b91c1c; font-size: 0.8rem; margin-top: 0.25rem;">This vacancy is closed and no longer accepts new candidate submissions.</p>
+                        <button class="btn btn-disabled" disabled style="width: 100%; margin-top: 0.75rem;">Applications Closed</button>
+                    </div>
+
+                    <!-- State 2: Already Applied -->
+                    <div th:if="${!job.deadlinePassed && alreadyApplied}" style="background-color: var(--success-bg); border: 1px solid #a7f3d0; border-radius: var(--radius-sm); padding: 1rem; margin-bottom: 1.25rem;">
+                        <p style="color: #065f46; font-size: 0.9rem; font-weight: 600;">✓ You have already applied for this position.</p>
+                        <p style="color: #047857; font-size: 0.8rem; margin-top: 0.25rem;">You can track employer review progress under My Applications.</p>
+                        <a th:href="@{/seeker/applications}" class="btn btn-outline" style="margin-top: 0.75rem; width: 100%; text-align: center; border-color: #6ee7b7; color: #065f46;">
+                            View in My Applications
+                        </a>
+                    </div>
+
+                    <!-- State 3: Missing Resume Warning -->
+                    <div th:if="${!job.deadlinePassed && !alreadyApplied && (resume == null || resume.fileName == null)}" style="background-color: var(--warning-bg); border: 1px solid #fde68a; border-radius: var(--radius-sm); padding: 1rem; margin-bottom: 1.25rem;">
+                        <p style="color: #92400e; font-size: 0.9rem; font-weight: 600;">⚠️ Resume Required to Apply</p>
+                        <p style="color: #b45309; font-size: 0.8rem; margin-top: 0.25rem;">You must upload your resume before submitting applications.</p>
+                        <a th:href="@{/seeker/resume}" class="btn btn-primary" style="margin-top: 0.75rem; width: 100%; text-align: center;">Upload Resume First</a>
+                    </div>
+
+                    <!-- State 4: Ready to Apply -->
+                    <div th:if="${!job.deadlinePassed && !alreadyApplied && resume != null && resume.fileName != null}">
+                        <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">
+                            Ready to take the next step? Your active resume (<strong><span th:text="${resume.fileName}">resume.pdf</span></strong>) will be attached automatically.
+                        </p>
+                        <a th:href="@{'/seeker/jobs/' + ${job.id} + '/apply'}" class="btn btn-primary" style="width: 100%; text-align: center; padding: 0.75rem;">
+                            🚀 Apply Now
+                        </a>
+                    </div>
+
+                    <div style="margin-top: 1.5rem; padding-top: 1.25rem; border-top: 1px solid var(--border-color); font-size: 0.85rem; line-height: 1.8;">
+                        <div><strong>Open Positions:</strong> <span th:text="${job.openings}">2</span></div>
+                        <div><strong>Application Deadline:</strong> <span th:text="${job.applicationDeadline}">2026-11-01</span></div>
+                        <div><strong>Hiring Company:</strong> <span th:text="${job.companyName}">TechCorp</span></div>
+                        <div><strong>Location:</strong> <span th:text="${job.locationCity + ', ' + job.locationState}">Bengaluru</span></div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3 class="card-title">🏢 About <span th:text="${job.companyName}">TechCorp</span></h3>
+                    <p style="font-size: 0.85rem; color: #475569; line-height: 1.6;">
+                        A verified technology firm hiring through TalentVela. Recruiter updates application status directly through the employer portal.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div th:replace="~{fragments/footer :: footer}"></div>
+</body>
+</html>

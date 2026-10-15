@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Find Jobs - TalentVela</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+    <div th:replace="~{fragments/navbar :: navbar('jobs')}"></div>
+
+    <main class="main-content">
+        <div class="page-header">
+            <div>
+                <h1 class="page-title">Explore Opportunities</h1>
+                <p class="page-subtitle">Search and discover open roles matching your skill set.</p>
+            </div>
+        </div>
+
+        <!-- Filter / Search Form -->
+        <div class="card" style="margin-bottom: 2rem;">
+            <form th:action="@{/seeker/jobs}" method="get">
+                <div style="display: grid; grid-template-columns: 2fr 1.5fr 1fr 1fr auto; gap: 1rem; align-items: flex-end;">
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label class="form-label">Keyword or Skill</label>
+                        <input type="text" name="keyword" th:value="${keyword}" placeholder="e.g. Java, Spring Boot, MySQL..." class="form-control">
+                    </div>
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label class="form-label">Location</label>
+                        <input type="text" name="location" th:value="${location}" placeholder="e.g. Bengaluru, Noida, Pune..." class="form-control">
+                    </div>
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label class="form-label">Work Mode</label>
+                        <select name="workMode" class="form-select">
+                            <option value="ALL" th:selected="${workMode == 'ALL'}">All Modes</option>
+                            <option value="Remote" th:selected="${workMode == 'Remote'}">Remote</option>
+                            <option value="Hybrid" th:selected="${workMode == 'Hybrid'}">Hybrid</option>
+                            <option value="On-Site" th:selected="${workMode == 'On-Site'}">On-Site</option>
+                        </select>
+                    </div>
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label class="form-label">Job Type</label>
+                        <select name="jobType" class="form-select">
+                            <option value="ALL" th:selected="${jobType == 'ALL'}">All Types</option>
+                            <option value="Full-Time" th:selected="${jobType == 'Full-Time'}">Full-Time</option>
+                            <option value="Internship" th:selected="${jobType == 'Internship'}">Internship</option>
+                            <option value="Part-Time" th:selected="${jobType == 'Part-Time'}">Part-Time</option>
+                        </select>
+                    </div>
+                    <div>
+                        <button type="submit" class="btn btn-primary" style="height: 42px; width: 100%;">Search</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+            <p style="font-size: 0.95rem; color: #475569; font-weight: 500;">
+                Showing <strong th:text="${totalJobsFound}">4</strong> active positions
+            </p>
+            <a th:href="@{/seeker/jobs}" th:if="${keyword != null || location != null || (workMode != 'ALL' && workMode != null) || (jobType != 'ALL' && jobType != null)}" style="font-size: 0.85rem; color: var(--danger);">Clear filters &times;</a>
+        </div>
+
+        <!-- Empty State -->
+        <div th:if="${#lists.isEmpty(jobs)}" class="card" style="text-align: center; padding: 3rem 1rem;">
+            <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">🔍</div>
+            <h3 style="font-size: 1.2rem; color: #1e293b; margin-bottom: 0.5rem;">No jobs found matching your criteria</h3>
+            <p style="color: #64748b; font-size: 0.9rem; margin-bottom: 1.5rem;">Try adjusting your keyword, changing work mode, or clearing search filters.</p>
+            <a th:href="@{/seeker/jobs}" class="btn btn-outline">Reset Search</a>
+        </div>
+
+        <!-- Job Cards List -->
+        <div th:each="job : ${jobs}" class="job-card">
+            <div class="job-header">
+                <div>
+                    <div class="job-company" th:text="${job.companyName}">TechCorp</div>
+                    <a th:href="@{'/seeker/jobs/' + ${job.id}}" class="job-title" th:text="${job.title}">Backend Java Developer</a>
+                </div>
+                <div style="display: flex; align-items: center; gap: 0.75rem;">
+                    <span th:if="${job.deadlinePassed}" class="badge badge-danger">Closed</span>
+                    <span th:if="${!job.deadlinePassed && appliedJobIds.contains(job.id)}" class="badge badge-success">✓ Applied</span>
+                    <div class="job-match-badge" th:text="${job.matchScore + '% Match'}">94% Match</div>
+                </div>
+            </div>
+
+            <p style="color: #475569; font-size: 0.9rem; margin: 0.5rem 0;" th:text="${#strings.abbreviate(job.description, 180)}">
+                Job summary preview goes here...
+            </p>
+
+            <div class="job-meta">
+                <span class="job-meta-item">📍 <span th:text="${job.locationCity + ', ' + job.locationState}">Bengaluru, Karnataka</span></span>
+                <span class="job-meta-item">💼 <span th:text="${job.jobType}">Full-Time</span> &bull; <span th:text="${job.workMode}">Hybrid</span></span>
+                <span class="job-meta-item">⏳ Experience: <span th:text="${job.experienceRequired}">1-3 Years</span></span>
+                <span class="job-meta-item">💰 <span th:text="${job.formattedSalary}">₹10,00,000 - ₹15,00,000</span></span>
+            </div>
+
+            <div style="margin: 0.75rem 0;">
+                <span th:each="skill : ${job.skillsArray}" class="skill-tag" th:text="${skill}">Java</span>
+            </div>
+
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 1rem; padding-top: 0.75rem; border-top: 1px solid var(--border-color);">
+                <span style="font-size: 0.8rem; color: var(--text-muted);">
+                    Apply before: <strong th:text="${job.applicationDeadline}">2026-11-01</strong> &bull; Openings: <strong th:text="${job.openings}">2</strong>
+                </span>
+                <div style="display: flex; gap: 0.5rem;">
+                    <a th:href="@{'/seeker/jobs/' + ${job.id}}" class="btn btn-outline" style="padding: 0.4rem 0.85rem; font-size: 0.85rem;">View Details</a>
+                    <button th:if="${job.deadlinePassed}" class="btn btn-disabled" disabled style="padding: 0.4rem 0.85rem; font-size: 0.85rem;">Closed</button>
+                    <a th:if="${!job.deadlinePassed && !appliedJobIds.contains(job.id)}" th:href="@{'/seeker/jobs/' + ${job.id} + '/apply'}" class="btn btn-primary" style="padding: 0.4rem 0.85rem; font-size: 0.85rem;">Apply Now</a>
+                    <a th:if="${!job.deadlinePassed && appliedJobIds.contains(job.id)}" th:href="@{/seeker/applications}" class="btn btn-outline" style="padding: 0.4rem 0.85rem; font-size: 0.85rem; color: var(--success); border-color: #a7f3d0;">Track Status</a>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div th:replace="~{fragments/footer :: footer}"></div>
+</body>
+</html>

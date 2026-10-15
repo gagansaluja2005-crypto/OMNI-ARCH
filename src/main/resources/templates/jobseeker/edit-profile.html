@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Profile - TalentVela</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+    <div th:replace="~{fragments/navbar :: navbar('profile')}"></div>
+
+    <main class="main-content" style="max-width: 900px;">
+        <div style="margin-bottom: 1.5rem;">
+            <a th:href="@{/seeker/profile}" style="font-size: 0.9rem; font-weight: 600;">&larr; Back to Profile Overview</a>
+        </div>
+
+        <div class="page-header">
+            <div>
+                <h1 class="page-title">Edit Candidate Profile</h1>
+                <p class="page-subtitle">Update your personal data, academic background, and technical skillset.</p>
+            </div>
+            <div style="background-color: var(--primary-light); border: 1px solid var(--primary-border); padding: 0.5rem 1rem; border-radius: var(--radius-sm); font-size: 0.85rem; font-weight: 600; color: var(--primary);">
+                Profile Strength: <span th:text="${profile.profileCompletionPercentage + '%'}">90%</span>
+            </div>
+        </div>
+
+        <form th:action="@{/seeker/profile}" method="post">
+            <!-- 1. Personal & Contact Details -->
+            <div class="card" style="margin-bottom: 1.5rem;">
+                <h3 class="card-title">1. Personal & Contact Information</h3>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                    <div class="form-group">
+                        <label class="form-label">Full Name *</label>
+                        <input type="text" name="fullName" th:value="${profile.fullName}" required class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Email Address (Read-only)</label>
+                        <input type="email" name="email" th:value="${profile.email}" readonly class="form-control" style="background-color: #f1f5f9; cursor: not-allowed;">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Phone Number *</label>
+                        <input type="text" name="phone" th:value="${profile.phone}" required class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Current City *</label>
+                        <input type="text" name="city" th:value="${profile.city}" required class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">State *</label>
+                        <input type="text" name="state" th:value="${profile.state}" required class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Country *</label>
+                        <input type="text" name="country" th:value="${profile.country}" required class="form-control">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Professional Headline *</label>
+                    <input type="text" name="headline" th:value="${profile.headline}" required placeholder="e.g. Java Backend Developer | Spring Boot Specialist" class="form-control">
+                </div>
+
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label class="form-label">Candidate Bio / Professional Summary *</label>
+                    <textarea name="bio" rows="3" class="form-control" required th:text="${profile.bio}" placeholder="Write a brief professional summary..."></textarea>
+                </div>
+            </div>
+
+            <!-- 2. Technical Profile & Skills -->
+            <div class="card" style="margin-bottom: 1.5rem;">
+                <h3 class="card-title">2. Professional & Technical Skills</h3>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                    <div class="form-group">
+                        <label class="form-label">Desired Job Role *</label>
+                        <input type="text" name="desiredRole" th:value="${profile.desiredRole}" required placeholder="e.g. Java Backend Engineer" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Years of Experience *</label>
+                        <input type="number" name="experienceYears" th:value="${profile.experienceYears}" required min="0" max="30" class="form-control">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Technical Skills (Comma separated) *</label>
+                    <input type="text" name="skills" th:value="${profile.skills}" required class="form-control" placeholder="Java, Spring Boot, MySQL, REST API, Git, Docker">
+                    <p style="font-size: 0.75rem; color: #64748b; margin-top: 0.35rem;">
+                        These skills power the TalentVela matching algorithm against open job requisitions.
+                    </p>
+                </div>
+            </div>
+
+            <!-- 3. Education Details -->
+            <div class="card" style="margin-bottom: 1.5rem;">
+                <h3 class="card-title">3. Academic Qualifications</h3>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                    <div class="form-group">
+                        <label class="form-label">Highest Qualification *</label>
+                        <input type="text" name="highestQualification" th:value="${profile.highestQualification}" required placeholder="e.g. B.Tech in Computer Science" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">College / University *</label>
+                        <input type="text" name="collegeUniversity" th:value="${profile.collegeUniversity}" required placeholder="e.g. Galgotias University" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Field of Study *</label>
+                        <input type="text" name="fieldOfStudy" th:value="${profile.fieldOfStudy}" required placeholder="e.g. Computer Science and Engineering" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Graduation Year *</label>
+                        <input type="number" name="graduationYear" th:value="${profile.graduationYear}" required placeholder="e.g. 2028" class="form-control">
+                    </div>
+                </div>
+            </div>
+
+            <!-- 4. Career Preferences -->
+            <div class="card" style="margin-bottom: 2rem;">
+                <h3 class="card-title">4. Career & Work Preferences</h3>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                    <div class="form-group">
+                        <label class="form-label">Preferred Location</label>
+                        <input type="text" name="preferredLocation" th:value="${profile.preferredLocation}" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Preferred Work Mode</label>
+                        <select name="preferredWorkMode" class="form-select">
+                            <option value="Hybrid" th:selected="${profile.preferredWorkMode == 'Hybrid'}">Hybrid</option>
+                            <option value="Remote" th:selected="${profile.preferredWorkMode == 'Remote'}">Remote</option>
+                            <option value="On-Site" th:selected="${profile.preferredWorkMode == 'On-Site'}">On-Site</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Expected Salary (Annual)</label>
+                        <input type="text" name="expectedSalary" th:value="${profile.expectedSalary}" placeholder="e.g. ₹8,00,000 - ₹12,00,000" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Notice Period</label>
+                        <input type="text" name="noticePeriod" th:value="${profile.noticePeriod}" placeholder="e.g. Immediate / 15 Days" class="form-control">
+                    </div>
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 1rem; align-items: center; margin-bottom: 3rem;">
+                <button type="submit" class="btn btn-primary" style="padding: 0.75rem 2rem;">
+                    💾 Save & Update Profile
+                </button>
+                <a th:href="@{/seeker/profile}" class="btn btn-outline">Cancel</a>
+            </div>
+        </form>
+    </main>
+
+    <div th:replace="~{fragments/footer :: footer}"></div>
+</body>
+</html>

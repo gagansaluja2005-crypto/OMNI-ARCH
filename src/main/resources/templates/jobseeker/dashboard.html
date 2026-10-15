@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Candidate Dashboard - TalentVela</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+    <div th:replace="~{fragments/navbar :: navbar('dashboard')}"></div>
+
+    <main class="main-content">
+        <!-- Top Profile Banner -->
+        <div class="card" style="margin-bottom: 2rem; background: linear-gradient(to right, #ffffff, #f0f7ff); border-left: 4px solid var(--primary);">
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+                <div>
+                    <h1 class="page-title" style="font-size: 1.6rem;">Welcome back, <span th:text="${profile.fullName}">Kushagra</span> 👋</h1>
+                    <p class="page-subtitle" th:text="${profile.headline}">Full Stack Java Developer | Spring Boot & MySQL</p>
+                    <p style="font-size: 0.85rem; color: #64748b; margin-top: 0.25rem;">
+                        📍 <span th:text="${profile.city + ', ' + profile.state}">Greater Noida, UP</span> &bull; 
+                        🎓 <span th:text="${profile.collegeUniversity}">Galgotias University</span>
+                    </p>
+                </div>
+                <div style="text-align: right; min-width: 220px;">
+                    <div style="display: flex; justify-content: space-between; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.35rem;">
+                        <span>Profile Completion</span>
+                        <span th:text="${profile.profileCompletionPercentage + '%'}">90%</span>
+                    </div>
+                    <div style="width: 100%; height: 8px; background-color: #e2e8f0; border-radius: 999px; overflow: hidden;">
+                        <div th:style="'width: ' + ${profile.profileCompletionPercentage} + '%; height: 100%; background-color: var(--success);'"></div>
+                    </div>
+                    <a th:href="@{/seeker/profile}" style="font-size: 0.8rem; font-weight: 600; display: inline-block; margin-top: 0.5rem;">Edit Profile &rarr;</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- 4 Key Stat Cards -->
+        <div class="grid-cols-4">
+            <div class="stat-card">
+                <div class="stat-icon" style="background-color: var(--info-bg); color: var(--info);">📄</div>
+                <div>
+                    <div class="stat-value" th:text="${totalApplied}">2</div>
+                    <div class="stat-label">Total Applied</div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon" style="background-color: var(--warning-bg); color: var(--warning);">⏳</div>
+                <div>
+                    <div class="stat-value" th:text="${underReview}">1</div>
+                    <div class="stat-label">Under Review</div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon" style="background-color: var(--purple-bg); color: var(--purple);">🎯</div>
+                <div>
+                    <div class="stat-value" th:text="${shortlisted}">1</div>
+                    <div class="stat-label">Shortlisted</div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon" style="background-color: var(--success-bg); color: var(--success);">🏆</div>
+                <div>
+                    <div class="stat-value" th:text="${selected}">0</div>
+                    <div class="stat-label">Offers / Selected</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2-Column Section: Recommended Jobs & Recent Applications -->
+        <div class="grid-cols-2">
+            <!-- Left: Recommended Jobs -->
+            <div>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                    <h2 class="card-title" style="margin-bottom: 0;">🎯 Top Job Matches For You</h2>
+                    <a th:href="@{/seeker/jobs}" style="font-size: 0.85rem; font-weight: 600;">Browse All Jobs &rarr;</a>
+                </div>
+
+                <div th:each="job : ${recommendedJobs}" class="job-card">
+                    <div class="job-header">
+                        <div>
+                            <div class="job-company" th:text="${job.companyName}">TechCorp</div>
+                            <div class="job-title" th:text="${job.title}">Backend Java Developer</div>
+                        </div>
+                        <div class="job-match-badge" th:text="${job.matchScore + '% Match'}">94% Match</div>
+                    </div>
+                    <div class="job-meta">
+                        <span class="job-meta-item">📍 <span th:text="${job.locationCity + ', ' + job.locationState}">Bengaluru, Karnataka</span></span>
+                        <span class="job-meta-item">💼 <span th:text="${job.jobType}">Full-Time</span> (<span th:text="${job.workMode}">Hybrid</span>)</span>
+                        <span class="job-meta-item">💰 <span th:text="${job.formattedSalary}">₹10,00,000 - ₹15,00,000</span></span>
+                    </div>
+                    <div style="margin: 0.75rem 0;">
+                        <span th:each="skill : ${job.skillsArray}" class="skill-tag" th:text="${skill}">Java</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 1rem; padding-top: 0.75rem; border-top: 1px solid var(--border-color);">
+                        <span style="font-size: 0.8rem; color: var(--text-muted);">Deadline: <strong th:text="${job.applicationDeadline}">2026-11-01</strong></span>
+                        <a th:href="@{'/seeker/jobs/' + ${job.id}}" class="btn btn-primary" style="padding: 0.4rem 0.9rem; font-size: 0.85rem;">View & Apply</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right: Quick Activity & Active Resume Widget -->
+            <div>
+                <!-- Active Resume Card -->
+                <div class="card" style="margin-bottom: 1.5rem;">
+                    <h3 class="card-title">📄 Active Resume</h3>
+                    <div style="background-color: #f8fafc; border: 1px solid var(--border-color); border-radius: var(--radius-sm); padding: 1rem; margin-bottom: 1rem;">
+                        <div style="font-weight: 600; font-size: 0.9rem; color: #1e293b;" th:text="${resume.fileName}">Kushagra_Pandey_Resume_v1.pdf</div>
+                        <div style="font-size: 0.75rem; color: #64748b; margin-top: 0.2rem;">Updated: <span th:text="${resume.uploadedAt}">2026-10-04</span></div>
+                    </div>
+                    <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">
+                        Employers review this attached resume when you submit applications.
+                    </p>
+                    <a th:href="@{/seeker/resume}" class="btn btn-outline" style="width: 100%; text-align: center;">Manage Resume & Skills</a>
+                </div>
+
+                <!-- Recent Applications Card -->
+                <div class="card">
+                    <h3 class="card-title">🕒 Recent Applications</h3>
+                    <div th:if="${#lists.isEmpty(recentApplications)}" style="text-align: center; padding: 1.5rem 0; color: #94a3b8;">
+                        <p>No applications yet.</p>
+                        <a th:href="@{/seeker/jobs}" class="btn btn-primary" style="margin-top: 0.75rem; font-size: 0.85rem;">Apply for your first job</a>
+                    </div>
+                    <div th:unless="${#lists.isEmpty(recentApplications)}">
+                        <div th:each="app : ${recentApplications}" style="padding: 0.75rem 0; border-bottom: 1px solid var(--border-color);">
+                            <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                                <div>
+                                    <div style="font-weight: 600; font-size: 0.9rem;" th:text="${app.jobTitle}">Java Backend Intern</div>
+                                    <div style="font-size: 0.8rem; color: #64748b;" th:text="${app.companyName}">InnoSoft</div>
+                                </div>
+                                <span class="badge" th:classappend="${app.statusBadgeClass}" th:text="${app.status}">SHORTLISTED</span>
+                            </div>
+                            <div style="font-size: 0.75rem; color: #94a3b8; margin-top: 0.35rem;">
+                                Applied on <span th:text="${app.appliedAt}">2026-10-04</span>
+                            </div>
+                        </div>
+                        <a th:href="@{/seeker/applications}" style="display: block; text-align: center; margin-top: 1rem; font-size: 0.85rem; font-weight: 600;">
+                            View All Applications &rarr;
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div th:replace="~{fragments/footer :: footer}"></div>
+</body>
+</html>

@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Candidate Profile - TalentVela</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+    <div th:replace="~{fragments/navbar :: navbar('profile')}"></div>
+
+    <main class="main-content" style="max-width: 950px;">
+        <div class="page-header">
+            <div>
+                <h1 class="page-title">Candidate Profile</h1>
+                <p class="page-subtitle">Your public profile viewed by hiring managers and recruitment partners.</p>
+            </div>
+            <div>
+                <a th:href="@{/seeker/profile/edit}" class="btn btn-primary">✏️ Edit Profile Details</a>
+            </div>
+        </div>
+
+        <div th:if="${successMessage}" class="alert alert-success">
+            <span>✅</span>
+            <span th:text="${successMessage}">Profile updated successfully!</span>
+        </div>
+
+        <!-- 1. Executive Summary Header Card -->
+        <div class="card" style="margin-bottom: 1.5rem; background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%); border-top: 4px solid var(--primary);">
+            <div style="display: flex; gap: 1.5rem; align-items: flex-start; flex-wrap: wrap;">
+                <div style="width: 80px; height: 80px; border-radius: 50%; background: #2563eb; color: white; display: flex; align-items: center; justify-content: center; font-size: 2rem; font-weight: 700; flex-shrink: 0;">
+                    KP
+                </div>
+                <div style="flex: 1;">
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 0.5rem;">
+                        <div>
+                            <h2 style="font-size: 1.5rem; color: #0f172a; margin-bottom: 0.2rem;" th:text="${profile.fullName}">Kushagra Pandey</h2>
+                            <p style="font-size: 1rem; color: var(--primary); font-weight: 600;" th:text="${profile.headline}">Full Stack Java Developer | Spring Boot Specialist</p>
+                        </div>
+                        <span class="badge badge-success">Active Job Seeker</span>
+                    </div>
+
+                    <div style="display: flex; gap: 1.5rem; flex-wrap: wrap; font-size: 0.85rem; color: #64748b; margin-top: 0.75rem;">
+                        <span>📍 <strong th:text="${profile.city + ', ' + profile.state + ', ' + profile.country}">Greater Noida, UP, India</strong></span>
+                        <span>✉️ <span th:text="${profile.email}">kushagra.pandey@talentvela.com</span></span>
+                        <span>📱 <span th:text="${profile.phone}">+91 98765 43210</span></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Profile Completion & Missing Fields Indicator (Task 3 Requirement) -->
+            <div style="margin-top: 1.5rem; padding-top: 1.25rem; border-top: 1px solid var(--border-color);">
+                <div style="display: flex; justify-content: space-between; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.35rem;">
+                    <span>Profile Completion Strength</span>
+                    <span th:text="${profile.profileCompletionPercentage + '%'}">90%</span>
+                </div>
+                <div style="width: 100%; height: 8px; background-color: #e2e8f0; border-radius: 999px; overflow: hidden; margin-bottom: 0.5rem;">
+                    <div th:style="'width: ' + ${profile.profileCompletionPercentage} + '%; height: 100%; background: linear-gradient(90deg, #3b82f6, #10b981);'"></div>
+                </div>
+                <div style="display: flex; gap: 1rem; flex-wrap: wrap; font-size: 0.75rem; color: #64748b;">
+                    <span style="color: var(--success);">✓ Name & Contact</span>
+                    <span style="color: var(--success);">✓ Technical Skills</span>
+                    <span style="color: var(--success);">✓ Education</span>
+                    <span style="color: var(--success);">✓ Active Resume</span>
+                    <span style="color: #94a3b8;">○ Profile Photo (Optional)</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid-cols-2">
+            <!-- Left Column: Bio, Skills, Education -->
+            <div>
+                <!-- Professional Bio -->
+                <div class="card" style="margin-bottom: 1.5rem;">
+                    <h3 class="card-title">📖 Professional Summary</h3>
+                    <p style="color: #334155; line-height: 1.7; font-size: 0.95rem; white-space: pre-line;" th:text="${profile.bio}">
+                        Candidate bio summary...
+                    </p>
+                </div>
+
+                <!-- Technical Skills -->
+                <div class="card" style="margin-bottom: 1.5rem;">
+                    <h3 class="card-title">💻 Technical Competencies</h3>
+                    <div>
+                        <span th:each="skill : ${profile.skillsArray}" class="skill-tag" style="font-size: 0.85rem; padding: 0.35rem 0.75rem;" th:text="${skill}">Java</span>
+                    </div>
+                </div>
+
+                <!-- Academic Education -->
+                <div class="card">
+                    <h3 class="card-title">🎓 Education & Degree</h3>
+                    <div style="border-left: 3px solid var(--primary); padding-left: 1rem;">
+                        <h4 style="font-size: 1rem; color: #0f172a;" th:text="${profile.highestQualification}">B.Tech in Computer Science & Engineering</h4>
+                        <div style="font-size: 0.9rem; color: var(--primary); font-weight: 500;" th:text="${profile.collegeUniversity}">Galgotias University (SCSE)</div>
+                        <div style="font-size: 0.8rem; color: #64748b; margin-top: 0.25rem;">
+                            Major: <span th:text="${profile.fieldOfStudy}">Computer Science and Engineering</span> &bull; 
+                            Class of <span th:text="${profile.graduationYear}">2028</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column: Career Preferences & Quick Status -->
+            <div>
+                <div class="card" style="margin-bottom: 1.5rem;">
+                    <h3 class="card-title">🎯 Career Preferences</h3>
+                    <div style="font-size: 0.85rem; line-height: 2; color: #334155;">
+                        <div><strong>Target Role:</strong> <span th:text="${profile.desiredRole}">Java Backend Engineer</span></div>
+                        <div><strong>Experience:</strong> <span th:text="${profile.experienceYears + ' Year(s)'}">1 Year(s)</span></div>
+                        <div><strong>Work Mode:</strong> <span class="badge badge-info" th:text="${profile.preferredWorkMode}">Hybrid</span></div>
+                        <div><strong>Locations:</strong> <span th:text="${profile.preferredLocation}">Delhi NCR / Bengaluru</span></div>
+                        <div><strong>Expected CTC:</strong> <span th:text="${profile.expectedSalary}">₹8,00,000 - ₹12,00,000</span></div>
+                        <div><strong>Notice Period:</strong> <span th:text="${profile.noticePeriod}">Immediate</span></div>
+                    </div>
+                    <div style="margin-top: 1.25rem; padding-top: 1rem; border-top: 1px solid var(--border-color);">
+                        <a th:href="@{/seeker/profile/edit}" class="btn btn-outline" style="width: 100%; text-align: center;">
+                            Edit Preferences
+                        </a>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3 class="card-title">📄 Active Resume</h3>
+                    <div style="background-color: #f8fafc; border: 1px solid var(--border-color); border-radius: var(--radius-sm); padding: 1rem; margin-bottom: 1rem;">
+                        <strong style="color: #0f172a; font-size: 0.9rem; display: block;" th:text="${resume.fileName}">Kushagra_Pandey_Resume_v1.pdf</strong>
+                        <span style="font-size: 0.75rem; color: #64748b;">Uploaded: <span th:text="${resume.uploadedAt}">2026-10-04</span></span>
+                    </div>
+                    <a th:href="@{/seeker/resume}" class="btn btn-outline" style="width: 100%; text-align: center;">
+                        Manage Resume & Skills
+                    </a>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div th:replace="~{fragments/footer :: footer}"></div>
+</body>
+</html>

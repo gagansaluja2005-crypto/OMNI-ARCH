@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Applications - TalentVela</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+    <div th:replace="~{fragments/navbar :: navbar('applications')}"></div>
+
+    <main class="main-content">
+        <div class="page-header">
+            <div>
+                <h1 class="page-title">Application History</h1>
+                <p class="page-subtitle">Track real-time hiring status for all roles you have applied to.</p>
+            </div>
+            <a th:href="@{/seeker/jobs}" class="btn btn-primary">+ Apply for More Jobs</a>
+        </div>
+
+        <!-- Flash Success / Error Messages -->
+        <div th:if="${successMessage}" class="alert alert-success">
+            <span>✅</span>
+            <span th:text="${successMessage}">Operation successful!</span>
+        </div>
+        <div th:if="${errorMessage}" class="alert alert-danger">
+            <span>⚠️</span>
+            <span th:text="${errorMessage}">Error notification</span>
+        </div>
+
+        <!-- Status Filter Tabs -->
+        <div class="card" style="padding: 0.75rem; margin-bottom: 1.5rem;">
+            <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                <a th:href="@{/seeker/applications(statusFilter='ALL')}" 
+                   class="btn" th:classappend="${statusFilter == 'ALL'} ? 'btn-primary' : 'btn-outline'" style="padding: 0.4rem 0.85rem; font-size: 0.85rem;">All</a>
+                <a th:href="@{/seeker/applications(statusFilter='APPLIED')}" 
+                   class="btn" th:classappend="${statusFilter == 'APPLIED'} ? 'btn-primary' : 'btn-outline'" style="padding: 0.4rem 0.85rem; font-size: 0.85rem;">Applied</a>
+                <a th:href="@{/seeker/applications(statusFilter='UNDER_REVIEW')}" 
+                   class="btn" th:classappend="${statusFilter == 'UNDER_REVIEW'} ? 'btn-primary' : 'btn-outline'" style="padding: 0.4rem 0.85rem; font-size: 0.85rem;">Under Review</a>
+                <a th:href="@{/seeker/applications(statusFilter='SHORTLISTED')}" 
+                   class="btn" th:classappend="${statusFilter == 'SHORTLISTED'} ? 'btn-primary' : 'btn-outline'" style="padding: 0.4rem 0.85rem; font-size: 0.85rem;">Shortlisted</a>
+                <a th:href="@{/seeker/applications(statusFilter='SELECTED')}" 
+                   class="btn" th:classappend="${statusFilter == 'SELECTED'} ? 'btn-primary' : 'btn-outline'" style="padding: 0.4rem 0.85rem; font-size: 0.85rem;">Selected / Offers</a>
+            </div>
+        </div>
+
+        <!-- Empty State -->
+        <div th:if="${#lists.isEmpty(applications)}" class="card" style="text-align: center; padding: 3rem 1rem;">
+            <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">📁</div>
+            <h3 style="font-size: 1.2rem; color: #1e293b; margin-bottom: 0.5rem;">No applications found in this category</h3>
+            <p style="color: #64748b; font-size: 0.9rem; margin-bottom: 1.5rem;">Browse our job listings to submit new applications.</p>
+            <a th:href="@{/seeker/jobs}" class="btn btn-primary">Find Open Jobs</a>
+        </div>
+
+        <!-- Applications Table -->
+        <div th:unless="${#lists.isEmpty(applications)}" class="card" style="padding: 0; overflow: hidden;">
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Job & Company</th>
+                            <th>Location</th>
+                            <th>Applied Date</th>
+                            <th>Resume Attached</th>
+                            <th>Cover Note</th>
+                            <th>Status</th>
+                            <th style="text-align: right;">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="app : ${applications}">
+                            <td>
+                                <strong style="font-size: 0.95rem; color: #0f172a;" th:text="${app.jobTitle}">Java Backend Developer</strong>
+                                <div style="font-size: 0.8rem; color: var(--primary);" th:text="${app.companyName}">TechCorp</div>
+                            </td>
+                            <td>
+                                <span style="font-size: 0.85rem; color: #475569;" th:text="${app.location}">Bengaluru, Karnataka</span>
+                            </td>
+                            <td>
+                                <span style="font-size: 0.85rem; color: #64748b;" th:text="${app.appliedAt}">2026-10-04</span>
+                            </td>
+                            <td>
+                                <span style="font-size: 0.8rem; background-color: #f1f5f9; padding: 0.2rem 0.5rem; border-radius: 4px; color: #334155;" th:text="${app.resumeFileName}">resume.pdf</span>
+                            </td>
+                            <td>
+                                <span style="font-size: 0.85rem; color: #64748b; max-width: 180px; display: inline-block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" th:text="${app.coverLetterText}">Cover note text...</span>
+                            </td>
+                            <td>
+                                <span class="badge" th:classappend="${app.statusBadgeClass}" th:text="${app.status}">APPLIED</span>
+                            </td>
+                            <td style="text-align: right;">
+                                <div style="display: flex; gap: 0.5rem; justify-content: flex-end; align-items: center;">
+                                    <a th:href="@{'/seeker/applications/' + ${app.id}}" class="btn btn-primary" style="padding: 0.35rem 0.65rem; font-size: 0.8rem;">View Details</a>
+                                    <form th:action="@{'/seeker/applications/' + ${app.id} + '/withdraw'}" method="post" onsubmit="return confirm('Are you sure you want to withdraw this application?');" style="display: inline;">
+                                        <button type="submit" class="btn btn-danger-outline" style="padding: 0.35rem 0.65rem; font-size: 0.8rem;">Withdraw</button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <div th:replace="~{fragments/footer :: footer}"></div>
+</body>
+</html>
